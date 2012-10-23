@@ -9,7 +9,7 @@
 
 ## Using the test project ##
 
-1. Rename [<code>keys.secret.sample](</codehttps://github.com/malixsys/Spreedly.Net/blob/master/src/Test.AsyncParse.Net/Resources/keys.secret.sample) to <code>keys.secret</code>
+1. Rename [<code>keys.secret.sample</code>](https://github.com/malixsys/Spreedly.Net/blob/master/src/Test.AsyncParse.Net/Resources/keys.secret.sample) to <code>keys.secret</code>
 2. Replace `YOUR_API_LOGIN`, `YOUR_API_SECRET` and `GATEWAY_TOKEN` with your own your _API Login_, _API _SECRET_ and _Gateway Token_ from your SpreedlyCore account page API CRedentials
 
  
