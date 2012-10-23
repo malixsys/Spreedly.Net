@@ -39,7 +39,9 @@ namespace Test.Spreedly.Net
         [TestMethod]
         public void when_we_redact_a_gateway()
         {
-            var gateway = _client.GetGateway("test", _client.RedactedToken());
+            var result = _client.Gateways();
+            var gateway =
+                result.FirstOrDefault(g => g.Type == "test" && g.Token == _client.RedactedToken() && g.Enabled == false);
             Assert.IsNotNull(gateway);
             if(gateway.Enabled)
             {

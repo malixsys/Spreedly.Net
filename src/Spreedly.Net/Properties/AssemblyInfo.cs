@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Spreedly.Net")]
-[assembly: AssemblyDescription("Spreedly.Net is a library to enable access to Parse.com through the asynchronously-capable Microsoft .NET Framework 4 HTTP Client Libraries")]
+[assembly: AssemblyDescription("Spreedly.Net is a library to encapsulate simple usage of SpreedlyCore.com's API")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("malix consulting")]
 [assembly: AssemblyProduct("Spreedly.Net")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0b8a7cd0-0b38-46d3-a218-76fb95b5ed11")]
+[assembly: Guid("677ec35d-94de-4b05-b0e5-eb21339e07ec")]
 
 // Version information for an assembly consists of the following four values:
 //
