@@ -12,6 +12,6 @@
     <description>$description$</description>
     <releaseNotes>Initial package creation</releaseNotes>
     <copyright>Copyright 2012</copyright>
-    <tags>parse.com client async nosql database</tags>
+    <tags>spreedly client async payment</tags>
   </metadata>
 </package>
