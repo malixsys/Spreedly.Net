@@ -13,7 +13,7 @@ namespace Test.Spreedly.Net
         [TestInitialize]
         public void MyTestInitialize()
         {
-            var secrets = Secrets.keys_secret.Split('\t');
+            var secrets = Secrets.spreedly.Split('\t');
             _client = new SpreedlyService(secrets[0], secrets[1], secrets.Length > 2 ? secrets[2] : "", secrets.Length > 3 ? secrets[3] : "");
         }
 

@@ -18,6 +18,7 @@ namespace Spreedly.Net.Service
 {
     public class SpreedlyService
     {
+
         private readonly SecurityKeys _securityKeys;
         
         public SpreedlyService(string applicationId, string masterKey, string gatewayToken, string redactedToken)
@@ -36,8 +37,9 @@ namespace Spreedly.Net.Service
         {
             var source = new CancellationTokenSource();
             var token = source.Token;
-            using (var client = new AsyncClient(_securityKeys.Credentials))
+            using (var client = new AsyncClient())
             {
+                client.Init(_securityKeys.Credentials);
                 using (var task = innerCall(client, token))
                 {
                     if (task.Wait(30000, token) == false)
@@ -68,8 +70,9 @@ namespace Spreedly.Net.Service
         {
             var source = new CancellationTokenSource();
             var token = source.Token;
-            using (var client = new AsyncClient(_securityKeys.Credentials))
+            using (var client = new AsyncClient())
             {
+                client.Init(_securityKeys.Credentials);
                 using (var task = innerCall_(client, token))
                 {
                     try
@@ -121,14 +124,14 @@ namespace Spreedly.Net.Service
             return Gateway.FromXml(result.Contents);
         }
 
-        
 
-        public Gateway AddGateway(string type)
+
+        public Gateway AddGateway(string type, Dictionary<string, string> otherGatewayInfos = null)
         {
-            var gateway = GetGateway(type, _securityKeys.GatewayToken);
+            var gateway = GetEnabledGateway(type);
             if (gateway == null)
             {
-                var result = Call((client, token) => client.Gateways(token, type));
+                var result = Call((client, token) => client.Gateways(token, type, otherGatewayInfos));
                 if (result.Failed())
                 {
                     return null;
@@ -136,16 +139,16 @@ namespace Spreedly.Net.Service
                 gateway = Gateway.FromXml(result.Contents).FirstOrDefault();
                 if(gateway != null)
                 {
-                    _securityKeys.GatewayToken = gateway.Token;
+                    _securityKeys.LastGatewayToken = gateway.Token;
                 }
             }
             return gateway;
         }
 
-        public Gateway GetGateway(string type_, string token_)
+        public Gateway GetEnabledGateway(string type_)
         {
             var gateways = Gateways();
-            return gateways.FirstOrDefault(g => g.Type == type_ && g.Token == token_ && g.Enabled);
+            return gateways.FirstOrDefault(g => g.Type == type_ && g.Enabled);
         }
 
         public string RedactedToken()
@@ -166,7 +169,7 @@ namespace Spreedly.Net.Service
         public Transaction ProcessPayment(string type, string paymentMethodToken_, decimal amount, string currency)
         {
             var wasTest = string.Equals(type, "test", StringComparison.InvariantCultureIgnoreCase);
-            var gateway = GetGateway(type, _securityKeys.GatewayToken);
+            var gateway = GetEnabledGateway(type);
              if (gateway == null)
              {
                  return new Transaction(wasTest,

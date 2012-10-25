@@ -4,26 +4,17 @@ using System.Text;
 
 namespace Spreedly.Net.Model
 {
-    internal class SecurityKeys
+    internal class SecurityKeys : UsernamePasswordKeys
     {
-        private readonly string _applicationId;
-        private readonly string _masterKey;
 
-        internal SecurityKeys(string applicationId_, string masterKey_, string gatewayToken_, params string[] redactedTokens_)
+        internal SecurityKeys(string username_, string password_, string gatewayToken_, params string[] redactedTokens_):base(username_,password_)
         {
-            GatewayToken = gatewayToken_;
+            LastGatewayToken = gatewayToken_;
             RedactedTokens = redactedTokens_;
-            _applicationId = applicationId_;
-            _masterKey = masterKey_;
-            Credentials = new NetworkCredential(applicationId_, masterKey_);
-            Authorizationheader = Convert.ToBase64String(Encoding.UTF8.GetBytes(String.Format("{0}:{1}", _applicationId, _masterKey)));
         }
 
-        internal string GatewayToken { get; set; }
+        internal string LastGatewayToken { get; set; }
         internal string[] RedactedTokens { get; set; }
 
-        internal NetworkCredential Credentials { get; private set; }
-
-        internal string Authorizationheader { get; private set; }
     }
 }

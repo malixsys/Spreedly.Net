@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.4.5.10\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -48,13 +51,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BuiltIns\Gateway.cs" />
-    <Compile Include="BuiltIns\Transaction.cs" />
+    <Compile Include="Model\BaseAsyncClient.cs" />
+    <Compile Include="Spreedly\Gateway.cs" />
+    <Compile Include="Spreedly\Transaction.cs" />
     <Compile Include="Extensions\SpreedlyExtensions.cs" />
     <Compile Include="Model\IAsyncClient.cs" />
+    <Compile Include="Model\UsernamePasswordKeys.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\AsyncCallResult.cs" />
     <Compile Include="Model\AsyncClient.cs" />
+    <Compile Include="Service\GenericService.cs" />
     <Compile Include="Service\SpreedlyService.cs" />
     <Compile Include="Model\SecurityKeys.cs" />
   </ItemGroup>
