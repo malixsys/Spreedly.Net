@@ -60,6 +60,22 @@ namespace Spreedly.Net.Model
             return Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);
         }
 
+        public Task<HttpResponseMessage> VerifyPaymentMethod(CancellationToken token, string gatewayToken, string paymentMethodToken)
+        {
+            var uri = string.Format(ROOT_URL + "/gateways/{0}/verify.xml", gatewayToken);
+            
+            var xml = string.Format(@"
+                <transaction>
+                    <payment_method_token>{0}</payment_method_token>
+                    <retain_on_success>true</retain_on_success>
+                </transaction>",
+                paymentMethodToken);
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+            var content = new StringContent(xml, null, "application/xml");
+            request.Content = content;
+            return Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);
+        }
+
         public Task<HttpResponseMessage> RetainPaymentMethod(CancellationToken token, string paymentMethodToken)
         {
             var uri = string.Format(ROOT_URL + "/payment_methods/{0}/retain.xml", paymentMethodToken);
