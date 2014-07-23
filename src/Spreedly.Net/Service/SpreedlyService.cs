@@ -182,5 +182,15 @@ namespace Spreedly.Net.Service
             }
             return Transaction.FromXml(result.Contents);
         }
+
+        public Transaction RetainPaymentMethod(string paymentMethodToken)
+        {
+            var result = Call((client, token) => client.RetainPaymentMethod(token, paymentMethodToken));
+            if (result.Failed())
+            {
+                return null;
+            }
+            return Transaction.FromXml(result.Contents);
+        }
     }
 }

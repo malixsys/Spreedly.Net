@@ -11,8 +11,10 @@ namespace Spreedly.Net.BuiltIns
     {
         internal Transaction(string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, TransactionErrors errors)
         {
-            Amount = decimal.Parse(amount, CultureInfo.InvariantCulture);
+            if (!string.IsNullOrEmpty(amount))
+                Amount = decimal.Parse(amount, CultureInfo.InvariantCulture);
             WasTest = string.Equals(wasTest, "true", StringComparison.InvariantCultureIgnoreCase);
+
             Succeeded = string.Equals(succeeded, "true", StringComparison.InvariantCultureIgnoreCase);
             Token = token;
             ObfuscatedNumber = obfuscatedNumber;

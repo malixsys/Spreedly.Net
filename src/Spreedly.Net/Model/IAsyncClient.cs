@@ -11,5 +11,6 @@ namespace Spreedly.Net.Model
         Task<HttpResponseMessage> Gateways(CancellationToken token, string type, Dictionary<string, string> otherGatewayInfos);
         Task<HttpResponseMessage> Redact(CancellationToken token, string gatewayToken);
         Task<HttpResponseMessage> ProcessPayment(CancellationToken token, string gatewayToken, string paymentMethodToken, decimal amount, string currency);
+        Task<HttpResponseMessage> RetainPaymentMethod(CancellationToken token, string paymentMethodToken);
     }
 }
