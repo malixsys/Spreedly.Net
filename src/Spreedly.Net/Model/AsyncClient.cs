@@ -19,9 +19,13 @@ namespace Spreedly.Net.Model
             return Client.GetAsync(new Uri(ROOT_URL + "/gateways.xml"), HttpCompletionOption.ResponseContentRead, token);
         }
 
-        public Task<HttpResponseMessage> TransactionsByGateway(CancellationToken token, string gatewayToken)
+        public Task<HttpResponseMessage> TransactionsByGateway(CancellationToken token, string gatewayToken, string sinceToken = "")
         {
-            var url = string.Format(ROOT_URL + "/gateways/{0}/transactions.xml", gatewayToken);
+            var url = string.Format(ROOT_URL + "/gateways/{0}/transactions.xml?order=desc", gatewayToken);
+
+            if (!string.IsNullOrEmpty(sinceToken))
+                url += string.Format("&since_token={0}", sinceToken);
+
             return Client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead, token);
         }
 

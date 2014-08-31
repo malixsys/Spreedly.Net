@@ -127,9 +127,9 @@ namespace Spreedly.Net.Service
             return Gateway.FromXml(result.Contents);
         }
 
-        public IEnumerable<Transaction> TransactionsByGateway(string gatewayToken)
+        public IEnumerable<Transaction> TransactionsByGateway(string gatewayToken, string sinceToken = "")
         {
-            var result = Call((client, token) => client.TransactionsByGateway(token, gatewayToken));
+            var result = Call((client, token) => client.TransactionsByGateway(token, gatewayToken, sinceToken));
             if (result.Failed())
             {
                 return null;
