@@ -18,6 +18,9 @@ namespace Spreedly.Net.Service
 {
     public class SpreedlyService
     {
+        #region log4net
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        #endregion
 
         private readonly SecurityKeys _securityKeys;
         
@@ -26,9 +29,9 @@ namespace Spreedly.Net.Service
         {
         }
 
-        private SpreedlyService(SecurityKeys securityKeys_)
+        private SpreedlyService(SecurityKeys securityKeys)
         {
-            _securityKeys = securityKeys_;
+            _securityKeys = securityKeys;
             ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
         }
 
@@ -124,6 +127,16 @@ namespace Spreedly.Net.Service
             return Gateway.FromXml(result.Contents);
         }
 
+        public IEnumerable<Transaction> TransactionsByGateway(string gatewayToken)
+        {
+            var result = Call((client, token) => client.TransactionsByGateway(token, gatewayToken));
+            if (result.Failed())
+            {
+                return null;
+            }
+
+            return Transaction.ListFromXml(result.Contents);
+        }
 
 
         public Gateway AddGateway(string type, Dictionary<string, string> otherGatewayInfos = null)
@@ -134,6 +147,7 @@ namespace Spreedly.Net.Service
                 var result = Call((client, token) => client.Gateways(token, type, otherGatewayInfos));
                 if (result.Failed())
                 {
+                    log.Error(result.Contents.ToString());
                     return null;
                 }
                 gateway = Gateway.FromXml(result.Contents).FirstOrDefault();
@@ -145,10 +159,10 @@ namespace Spreedly.Net.Service
             return gateway;
         }
 
-        public Gateway GetEnabledGateway(string type_)
+        public Gateway GetEnabledGateway(string type)
         {
             var gateways = Gateways();
-            return gateways.FirstOrDefault(g => g.Type == type_ && g.Enabled);
+            return gateways.FirstOrDefault(g => g.Type == type && g.Enabled);
         }
 
         public string RedactedToken()
@@ -161,12 +175,13 @@ namespace Spreedly.Net.Service
             var result = Call((client, token) => client.Redact(token, gatewayToken));
             if (result.Failed())
             {
+                log.Error(result.Contents.ToString());
                 return null;
             }
             return Gateway.FromXml(result.Contents).FirstOrDefault();
         }
 
-        public Transaction ProcessPayment(string type, string paymentMethodToken_, decimal amount, string currency)
+        public Transaction ProcessPayment(string type, string paymentMethodToken, decimal amount, string currency)
         {
             var wasTest = string.Equals(type, "test", StringComparison.InvariantCultureIgnoreCase);
             var gateway = GetEnabledGateway(type);
@@ -175,7 +190,7 @@ namespace Spreedly.Net.Service
                  return new Transaction(wasTest,
                      new TransactionErrors("", TransactionErrorType.InvalidGateway));
              }
-            var result = Call((client, token) => client.ProcessPayment(token, gateway.Token, paymentMethodToken_, amount, currency));
+            var result = Call((client, token) => client.ProcessPayment(token, gateway.Token, paymentMethodToken, amount, currency));
             if(result.Contents == null)
             {
                 return new Transaction(wasTest,new TransactionErrors("", TransactionErrorType.CallFailed));
@@ -188,9 +203,64 @@ namespace Spreedly.Net.Service
             var result = Call((client, token) => client.RetainPaymentMethod(token, paymentMethodToken));
             if (result.Failed())
             {
+                log.Error(result.Contents.ToString());
                 return null;
             }
             return Transaction.FromXml(result.Contents);
         }
+
+        public Transaction VerifyPaymentMethod(string type, string paymentMethodToken, bool retainOnSuccess = false)
+        {
+            var wasTest = string.Equals(type, "test", StringComparison.InvariantCultureIgnoreCase);
+            var gateway = GetEnabledGateway(type);
+            if (gateway == null)
+            {
+                return new Transaction(wasTest,
+                    new TransactionErrors("", TransactionErrorType.InvalidGateway));
+            }
+            var result = Call((client, token) => client.VerifyPaymentMethod(token, gateway.Token, paymentMethodToken, retainOnSuccess));
+            if (result.Failed())
+            {
+                log.Error(result.Contents.ToString());
+                return null;
+            }
+            return Transaction.FromXml(result.Contents);
+        }
+
+        public Transaction AuthorizePayment(string type, string paymentMethodToken, decimal amount, string currency, bool retainOnSuccess = false)
+        {
+            var wasTest = string.Equals(type, "test", StringComparison.InvariantCultureIgnoreCase);
+            var gateway = GetEnabledGateway(type);
+            if (gateway == null)
+            {
+                return new Transaction(wasTest,
+                    new TransactionErrors("", TransactionErrorType.InvalidGateway));
+            }
+            var result = Call((client, token) => client.AuthorizePayment(token, gateway.Token, paymentMethodToken, amount, currency, retainOnSuccess));
+            if (result.Contents == null)
+            {
+                return new Transaction(wasTest, new TransactionErrors("", TransactionErrorType.CallFailed));
+            }
+            return Transaction.FromXml(result.Contents);
+        }
+
+        public Transaction Void(string type, string transactionToken)
+        {
+            var wasTest = string.Equals(type, "test", StringComparison.InvariantCultureIgnoreCase);
+            var gateway = GetEnabledGateway(type);
+            if (gateway == null)
+            {
+                return new Transaction(wasTest,
+                    new TransactionErrors("", TransactionErrorType.InvalidGateway));
+            }
+            var result = Call((client, token) => client.Void(token, transactionToken));
+            if (result.Failed())
+            {
+                log.Error(result.Contents.ToString());
+                return null;
+            }
+            return Transaction.FromXml(result.Contents);
+        }
+
     }
 }

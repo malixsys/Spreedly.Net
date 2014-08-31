@@ -19,6 +19,12 @@ namespace Spreedly.Net.Model
             return Client.GetAsync(new Uri(ROOT_URL + "/gateways.xml"), HttpCompletionOption.ResponseContentRead, token);
         }
 
+        public Task<HttpResponseMessage> TransactionsByGateway(CancellationToken token, string gatewayToken)
+        {
+            var url = string.Format(ROOT_URL + "/gateways/{0}/transactions.xml", gatewayToken);
+            return Client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead, token);
+        }
+
         public Task<HttpResponseMessage> Gateways(CancellationToken token_, string type, Dictionary<string, string> otherGatewayInfos = null)
         {
             var xml = string.Format("<gateway><gateway_type>{0}</gateway_type>{1}</gateway>", type, DicToXml(otherGatewayInfos));
@@ -60,11 +66,48 @@ namespace Spreedly.Net.Model
             return Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);
         }
 
+        public Task<HttpResponseMessage> AuthorizePayment(CancellationToken token, string gatewayToken, string paymentMethodToken, decimal amount, string currency, bool retainOnSuccess = false)
+        {
+            var uri = string.Format(ROOT_URL + "/gateways/{0}/authorize.xml", gatewayToken);
+            var xml = string.Format("<transaction><amount>{0:#.00}</amount><currency_code>{1}</currency_code><payment_method_token>{2}</payment_method_token><retain_on_success>{3}</retain_on_success></transaction>",
+                amount, currency, paymentMethodToken, retainOnSuccess);
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+            var content = new StringContent(xml, null, "application/xml");
+            request.Content = content;
+            return Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);
+        }
+
+        public Task<HttpResponseMessage> VerifyPaymentMethod(CancellationToken token, string gatewayToken, string paymentMethodToken, bool retainOnSuccess = false)
+        {
+            var uri = string.Format(ROOT_URL + "/gateways/{0}/verify.xml", gatewayToken);
+            
+            var xml = string.Format(@"
+                <transaction>
+                    <payment_method_token>{0}</payment_method_token>
+                    <retain_on_success>{1}</retain_on_success>
+                </transaction>",
+                paymentMethodToken, retainOnSuccess);
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
+            var content = new StringContent(xml, null, "application/xml");
+            request.Content = content;
+            return Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);
+        }
+
         public Task<HttpResponseMessage> RetainPaymentMethod(CancellationToken token, string paymentMethodToken)
         {
             var uri = string.Format(ROOT_URL + "/payment_methods/{0}/retain.xml", paymentMethodToken);
 
             var request = new HttpRequestMessage(HttpMethod.Put, uri);
+            var content = new StringContent("", null, "application/xml");
+            request.Content = content;
+            return Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);
+        }
+
+        public Task<HttpResponseMessage> Void(CancellationToken token, string transactionToken)
+        {
+            var uri = string.Format(ROOT_URL + "/transactions/{0}/void.xml", transactionToken);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, uri);
             var content = new StringContent("", null, "application/xml");
             request.Content = content;
             return Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, token);

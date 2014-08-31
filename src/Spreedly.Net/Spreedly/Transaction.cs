@@ -9,7 +9,7 @@ namespace Spreedly.Net.BuiltIns
 {
     public class Transaction
     {
-        internal Transaction(string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, TransactionErrors errors)
+        internal Transaction(string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, string avs_code, TransactionErrors errors)
         {
             if (!string.IsNullOrEmpty(amount))
                 Amount = decimal.Parse(amount, CultureInfo.InvariantCulture);
@@ -20,6 +20,7 @@ namespace Spreedly.Net.BuiltIns
             ObfuscatedNumber = obfuscatedNumber;
             Errors = errors;
 
+            AvsCode = avs_code;
         }
 
         public Transaction(bool wasTest, TransactionErrors errors)
@@ -42,8 +43,12 @@ namespace Spreedly.Net.BuiltIns
                 tran.GetStringChild("succeeded"),
                 tran.GetStringChild("token"),
                 tran.Element("payment_method").GetStringChild("number"),
+                tran.Element("response").GetStringChild("avs_code"),
                 new TransactionErrors(tran)
                 );
+
+            ret.GatewayTransactionId = tran.GetStringChild("gateway_transaction_id");
+
             if (ret.Succeeded == false && ret.Errors.Count == 0)
             {
                 if (string.Equals(tran.GetStringChild("state"), "gateway_processing_failed",
@@ -56,8 +61,45 @@ namespace Spreedly.Net.BuiltIns
             return ret;
         }
 
+        public static List<Transaction> ListFromXml(XDocument doc)
+        {
+            List<Transaction> transactions = new List<Transaction>();
 
-       
+            var trans = doc.Element("transactions").Elements("transaction");
+            if (trans == null)
+            {
+                return transactions;
+            }
+            
+            foreach (var tran in trans)
+            {
+                var ret = new Transaction(
+                    tran.GetStringChild("amount"),
+                    tran.GetStringChild("on_test_gateway"),
+                    tran.GetStringChild("succeeded"),
+                    tran.GetStringChild("token"),
+                    tran.Element("payment_method").GetStringChild("number"),
+                    tran.Element("response").GetStringChild("avs_code"),
+                    new TransactionErrors(tran)
+                    );
+
+                ret.GatewayTransactionId = tran.GetStringChild("gateway_transaction_id");
+
+                if (ret.Succeeded == false && ret.Errors.Count == 0)
+                {
+                    if (string.Equals(tran.GetStringChild("state"), "gateway_processing_failed",
+                                      StringComparison.InvariantCultureIgnoreCase))
+                    {
+
+                        ret.Errors = new TransactionErrors("", TransactionErrorType.Unknown);
+                    }
+                }
+                transactions.Add(ret);
+            }
+
+            return transactions;
+        }
+
 
         public decimal Amount { get; private set; }
 
@@ -69,7 +111,11 @@ namespace Spreedly.Net.BuiltIns
 
         public string ObfuscatedNumber { get; private set; }
 
+        public string AvsCode { get; private set; }
+
         public TransactionErrors Errors { get; private set; }
+
+        public string GatewayTransactionId { get; set; }
     }
 
     public class TransactionErrors
