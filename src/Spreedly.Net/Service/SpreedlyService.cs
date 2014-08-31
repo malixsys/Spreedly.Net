@@ -138,6 +138,17 @@ namespace Spreedly.Net.Service
             return Transaction.ListFromXml(result.Contents);
         }
 
+        public Transaction ShowTransaction(string transactionToken)
+        {
+            var result = Call((client, token) => client.Transaction(token, transactionToken));
+            if (result.Failed())
+            {
+                return null;
+            }
+
+            return Transaction.FromXml(result.Contents);
+        }
+
 
         public Gateway AddGateway(string type, Dictionary<string, string> otherGatewayInfos = null)
         {

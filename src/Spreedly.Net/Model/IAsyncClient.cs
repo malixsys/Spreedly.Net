@@ -18,5 +18,7 @@ namespace Spreedly.Net.Model
         Task<HttpResponseMessage> RetainPaymentMethod(CancellationToken token, string paymentMethodToken);
         Task<HttpResponseMessage> VerifyPaymentMethod(CancellationToken token, string gatewayToken, string paymentMethodToken, bool retainOnSuccess = false);
         Task<HttpResponseMessage> Void(CancellationToken token, string transactionToken);
+
+        Task<HttpResponseMessage> Transaction(CancellationToken token, string transactionToken);
     }
 }
