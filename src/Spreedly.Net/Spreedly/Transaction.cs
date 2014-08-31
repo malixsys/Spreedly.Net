@@ -33,7 +33,12 @@ namespace Spreedly.Net.BuiltIns
         public static Transaction FromXml(XDocument doc)
         {
             var tran = doc.Element("transaction");
-            if(tran == null)
+            return FromXml(tran);
+        }
+
+        public static Transaction FromXml(XElement tran)
+        {
+            if (tran == null)
             {
                 return null;
             }
@@ -48,6 +53,7 @@ namespace Spreedly.Net.BuiltIns
                 );
 
             ret.GatewayTransactionId = tran.GetStringChild("gateway_transaction_id");
+            ret.CreatedAt = DateTime.Parse(tran.GetStringChild("created_at"));
 
             if (ret.Succeeded == false && ret.Errors.Count == 0)
             {
@@ -73,27 +79,7 @@ namespace Spreedly.Net.BuiltIns
             
             foreach (var tran in trans)
             {
-                var ret = new Transaction(
-                    tran.GetStringChild("amount"),
-                    tran.GetStringChild("on_test_gateway"),
-                    tran.GetStringChild("succeeded"),
-                    tran.GetStringChild("token"),
-                    tran.Element("payment_method").GetStringChild("number"),
-                    tran.Element("response").GetStringChild("avs_code"),
-                    new TransactionErrors(tran)
-                    );
-
-                ret.GatewayTransactionId = tran.GetStringChild("gateway_transaction_id");
-
-                if (ret.Succeeded == false && ret.Errors.Count == 0)
-                {
-                    if (string.Equals(tran.GetStringChild("state"), "gateway_processing_failed",
-                                      StringComparison.InvariantCultureIgnoreCase))
-                    {
-
-                        ret.Errors = new TransactionErrors("", TransactionErrorType.Unknown);
-                    }
-                }
+                var ret = FromXml(tran);
                 transactions.Add(ret);
             }
 
@@ -116,6 +102,8 @@ namespace Spreedly.Net.BuiltIns
         public TransactionErrors Errors { get; private set; }
 
         public string GatewayTransactionId { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 
     public class TransactionErrors
