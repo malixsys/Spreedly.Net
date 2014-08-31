@@ -9,10 +9,11 @@ namespace Spreedly.Net.BuiltIns
 {
     public class Transaction
     {
-        internal Transaction(string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, string avs_code, TransactionErrors errors)
+        internal Transaction(string raw, string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, string avs_code, TransactionErrors errors)
         {
             if (!string.IsNullOrEmpty(amount))
                 Amount = decimal.Parse(amount, CultureInfo.InvariantCulture);
+
             WasTest = string.Equals(wasTest, "true", StringComparison.InvariantCultureIgnoreCase);
 
             Succeeded = string.Equals(succeeded, "true", StringComparison.InvariantCultureIgnoreCase);
@@ -21,6 +22,7 @@ namespace Spreedly.Net.BuiltIns
             Errors = errors;
 
             AvsCode = avs_code;
+            Raw = raw;
         }
 
         public Transaction(bool wasTest, TransactionErrors errors)
@@ -43,6 +45,7 @@ namespace Spreedly.Net.BuiltIns
                 return null;
             }
             var ret = new Transaction(
+                tran.ToString(),
                 tran.GetStringChild("amount"),
                 tran.GetStringChild("on_test_gateway"),
                 tran.GetStringChild("succeeded"),
@@ -100,6 +103,8 @@ namespace Spreedly.Net.BuiltIns
         public string AvsCode { get; private set; }
 
         public TransactionErrors Errors { get; private set; }
+
+        public string Raw { get; private set; }
 
         public string GatewayTransactionId { get; set; }
 
