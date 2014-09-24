@@ -1,17 +1,18 @@
 <?xml version="1.0"?>
-<package >
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>Spreedly.Net</id>
+    <version>0.9.0.1</version>
+    <title>Spreedly.Net</title>
+    <authors>malix consulting</authors>
+    <owners>malix consulting</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/malixsys/Spreedly.Net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>Spreedly.Net is a library to encapsulate simple usage of SpreedlyCore.com's API</description>
     <releaseNotes>Initial package creation</releaseNotes>
-    <copyright>Copyright 2012</copyright>
+    <copyright>Copyright 2014</copyright>
     <tags>spreedly client async payment</tags>
+    <dependencies />
   </metadata>
 </package>
