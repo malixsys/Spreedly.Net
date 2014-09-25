@@ -5,9 +5,9 @@
     {
         private readonly AsyncCallFailureReason _asyncCallFailureReason;
 
-        public AsyncCallResult(AsyncCallFailureReason asyncCallFailureReason_, T result = null)
+        public AsyncCallResult(AsyncCallFailureReason asyncCallFailureReason, T result = null)
         {
-            _asyncCallFailureReason = asyncCallFailureReason_;
+            _asyncCallFailureReason = asyncCallFailureReason;
             Contents = result;
         }
 

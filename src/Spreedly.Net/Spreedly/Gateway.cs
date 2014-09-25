@@ -18,13 +18,13 @@ namespace Spreedly.Net.BuiltIns
             return doc.Descendants("gateway").Select(node => new Gateway(node)).ToList();
         }
 
-        public Gateway(XElement node_)
+        public Gateway(XElement node)
         {
-            _token = node_.GetStringChild("token");
+            _token = node.GetStringChild("token");
             
-            _type = node_.GetStringChild("gateway_type");
+            _type = node.GetStringChild("gateway_type");
 
-            var redacted = node_.GetStringChild("redacted");
+            var redacted = node.GetStringChild("redacted");
             _enabled = redacted != null && string.Equals(redacted, "false", StringComparison.InvariantCultureIgnoreCase);
         }
 

@@ -11,15 +11,15 @@ namespace Spreedly.Net.Extensions
             return result == null || result.FailureReason != AsyncCallFailureReason.None;
         }
 
-        public static string GetStringChild(this XElement node_, string name)
+        public static string GetStringChild(this XElement node, string name)
         {
-            return GetStringChild(node_, name, string.Empty);
+            return GetStringChild(node, name, string.Empty);
         }
 
-        public static string GetStringChild(this XElement node_, string name, string defaultValue)
+        public static string GetStringChild(this XElement node, string name, string defaultValue)
         {
-            if (node_ == null) return defaultValue;
-            var token = node_.Element(name);
+            if (node == null) return defaultValue;
+            var token = node.Element(name);
             return token == null ? defaultValue : token.Value;
         }
 
