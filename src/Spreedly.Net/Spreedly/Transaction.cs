@@ -9,7 +9,7 @@ namespace Spreedly.Net.BuiltIns
 {
     public class Transaction
     {
-        internal Transaction(string raw, string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, string avs_code, TransactionErrors errors)
+        internal Transaction(string raw, string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, TransactionErrors errors)
         {
             if (!string.IsNullOrEmpty(amount))
                 Amount = decimal.Parse(amount, CultureInfo.InvariantCulture);
@@ -21,7 +21,6 @@ namespace Spreedly.Net.BuiltIns
             ObfuscatedNumber = obfuscatedNumber;
             Errors = errors;
 
-            AvsCode = avs_code;
             Raw = raw;
         }
 
@@ -51,12 +50,14 @@ namespace Spreedly.Net.BuiltIns
                 tran.GetStringChild("succeeded"),
                 tran.GetStringChild("token"),
                 tran.Element("payment_method").GetStringChild("number"),
-                tran.Element("response").GetStringChild("avs_code"),
                 new TransactionErrors(tran)
-                );
+            );
 
+            ret.GatewayToken = tran.GetStringChild("gateway_token");
             ret.GatewayTransactionId = tran.GetStringChild("gateway_transaction_id");
             ret.CreatedAt = DateTime.Parse(tran.GetStringChild("created_at"));
+
+            ret.Response = new TransactionResponse(tran.Element("response"));
 
             if (ret.Succeeded == false && ret.Errors.Count == 0)
             {
@@ -100,15 +101,28 @@ namespace Spreedly.Net.BuiltIns
 
         public string ObfuscatedNumber { get; private set; }
 
-        public string AvsCode { get; private set; }
+        [Obsolete("Use Response.AvsCode instead")]
+        public string AvsCode
+        {
+            get
+            {
+                if (Response != null)
+                    return Response.AvsCode;
+                return null;
+            }
+        }
 
         public TransactionErrors Errors { get; private set; }
 
         public string Raw { get; private set; }
 
+        public string GatewayToken { get; set; }
+
         public string GatewayTransactionId { get; set; }
 
         public DateTime CreatedAt { get; set; }
+
+        public TransactionResponse Response { get; private set; }
     }
 
     public class TransactionErrors
