@@ -129,6 +129,7 @@ namespace Test.Spreedly.Net
             Assert.IsTrue(t.Succeeded);
             Assert.AreEqual("7212OjIpGu839iDJa7iOoqxgQwb", t.Token);
             Assert.AreEqual("XXXX-XXXX-XXXX-1111", t.ObfuscatedNumber);
+            Assert.IsNotNull(t.Response);
         }
 
         [TestMethod]
