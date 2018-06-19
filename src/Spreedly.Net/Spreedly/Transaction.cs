@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
 using Spreedly.Net.Extensions;
+using System.Text;
 
 namespace Spreedly.Net.BuiltIns
 {
@@ -12,7 +13,7 @@ namespace Spreedly.Net.BuiltIns
         internal Transaction(string raw, string amount, string wasTest, string succeeded, string token, string obfuscatedNumber, string avs_code, TransactionErrors errors)
         {
             if (!string.IsNullOrEmpty(amount))
-                Amount = decimal.Parse(amount, CultureInfo.InvariantCulture);
+                Amount = decimal.Parse(amount, CultureInfo.InvariantCulture) / 100;
 
             WasTest = string.Equals(wasTest, "true", StringComparison.InvariantCultureIgnoreCase);
 
@@ -57,6 +58,7 @@ namespace Spreedly.Net.BuiltIns
 
             ret.GatewayTransactionId = tran.GetStringChild("gateway_transaction_id");
             ret.CreatedAt = DateTime.Parse(tran.GetStringChild("created_at"));
+            ret.PaymentMethodToken = tran.Element("payment_method").GetStringChild("token");
 
             if (ret.Succeeded == false && ret.Errors.Count == 0)
             {
@@ -88,8 +90,7 @@ namespace Spreedly.Net.BuiltIns
 
             return transactions;
         }
-
-
+        
         public decimal Amount { get; private set; }
 
         public bool WasTest { get; private set; }
@@ -107,6 +108,8 @@ namespace Spreedly.Net.BuiltIns
         public string Raw { get; private set; }
 
         public string GatewayTransactionId { get; set; }
+
+        public string PaymentMethodToken { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }
@@ -170,6 +173,20 @@ namespace Spreedly.Net.BuiltIns
                     _list.Where(kv => string.Equals(kv.Key, key, StringComparison.InvariantCultureIgnoreCase)).Select(
                         kv => kv.Value).ToArray();
             }
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var kvp in _list)
+            {
+                if (null != kvp.Key)
+                {
+                    sb.Append(kvp.Key + " - " + kvp.Value + "; ");
+                }
+            }
+
+            return sb.ToString();
         }
     }
 

@@ -55,7 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\BaseAsyncClient.cs" />
+    <Compile Include="Spreedly\CreditCard.cs" />
     <Compile Include="Spreedly\Gateway.cs" />
+    <Compile Include="Spreedly\PaymentMethod.cs" />
     <Compile Include="Spreedly\Transaction.cs" />
     <Compile Include="Extensions\SpreedlyExtensions.cs" />
     <Compile Include="Model\IAsyncClient.cs" />

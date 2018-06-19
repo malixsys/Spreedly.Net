@@ -18,8 +18,7 @@ namespace Spreedly.Net.Model
         protected BaseAsyncClient()
         {
         }
-
-
+        
         protected internal void Init(string rootUrl, ICredentials credentials)
         {
             if (_initialized) throw new InvalidOperationException("Already initialized");

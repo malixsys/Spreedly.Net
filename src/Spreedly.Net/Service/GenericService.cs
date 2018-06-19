@@ -22,6 +22,9 @@ namespace Spreedly.Net.Service
             _serializer = serializer;
         }
 
+        /// <summary>
+        /// Make an http call asynchronously and return the result.
+        /// </summary>
         public AsyncCallResult<T> Call<T>(Func<TClient, CancellationToken, Task<HttpResponseMessage>> innerCall) where T : class
         {
             var source = new CancellationTokenSource();
